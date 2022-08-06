@@ -19,7 +19,9 @@
         }
         .generic_property {
             color : rgb(187, 186, 186);
-            
+        }
+        .my_screenshot {
+            width:200px;
         }
     </style>
     <body>
@@ -65,6 +67,9 @@
                     },
                 },
             };
+            var screenshotPath = function(path) {
+                return "<img class='my_screenshot' src='ui_sim/screenshots/" + path + "' >";
+            };
             var experinceTimeline = [
                 {
                     name:"Opening",
@@ -84,7 +89,7 @@
                     }}
                 },
                 {
-                    message_pre:"For the this product, there is a deadline in two weeks, and a list of active 'tasks/tickets' is being kept, look like there are two assigned to me right now.",
+                    message_pre:"For this product, there is a deadline in two weeks, and a list of active 'tasks/tickets' is being kept, looks like there are two assigned to me right now.",
                     message_post:"The first item is something to do with the indicator icons...",
                     whole:{work:{
                         products: {
@@ -118,8 +123,8 @@
                             release:"v0.8",
                             priority:1,
                             moment:{
-                                screenshot:"(image missing)",
-                                "device_id":"{{rcb920340}}",
+                                screenshot:screenshotPath("issue_refill_before.png"),
+                                "device_id":"rcb920340",
                                 "[[log_id]]":"[[tm20670617e19]]",
                             }
                         }} }}
@@ -128,14 +133,14 @@
                 {
                     message_post:"At the moment of the issue, the hardware signal said it didn't need a refill, but the ui state shows that the icon was set to showing. Let's look at the source code that controls this icon...",
                     whole:{work:{fleet:{devices:{"logs":{
-                        "device_id":"{{rcb920340}}",
-                        "log_id":"{{tm20670617e19}}",
+                        "device_id":"rcb920340",
+                        "log_id":"tm20670617e19",
                         "device_class":"Recyclotron-hw1.2-sw0.8",
                         "time":"2067/06/17 3.33pm",
-                        "screenshot":"(image missing)",
+                        "screenshot":screenshotPath("issue_refill_before.png"),
                         "hardware_signals":{
                             "powered":false,
-                            "refill":"{{false}}",
+                            "{{refill}}":"{{false}}",
                         },
                         "ui_scene":{
                             "button":{show:true,text:"off",
@@ -201,15 +206,15 @@
                     message_pre:"This gives a virtual snapshot from the simulator, so we can see what's going on.",
                     message_post:"Looks like the change worked, with the icon now starting in the correct state, even if the signal doens't change.",
                     whole:{work:{fleet:{simulators:{"logs":{
-                        "device_id":"{{local_sim}}",
-                        "log_id":"{{tm20670618e42}}",
+                        "device_id":"local_sim",
+                        "log_id":"tm20670618e42",
                         "device_class":"Recyclotron-hw1.3s-sw0.8custom",
                         "branch":"[[fix_for_tk3284]]",
                         "time":"2067/06/18 9.51am",
-                        "screenshot":"(image missing)",
+                        "screenshot":screenshotPath("issue_refill_after.png"),
                         "hardware_signals":{
                             "powered":false,
-                            "refill":"{{false}}",
+                            "{{refill}}":"{{false}}",
                         },
                         "ui_scene":{
                             "button":{show:true,text:"off",id:"mOnButton"},
@@ -245,14 +250,14 @@
                     message_post:"On hardware it looks like the signal is actually 'invalid' rather than 'false' for the refill, but luckily our code supports translating that as false. So for now this is appropriate.",
                     whole:{work:{fleet:{devices:{"logs":{
                         "device_id":"testDevice032",
-                        "log_id":"{{tm20670618e92}}",
+                        "log_id":"tm20670618e92",
                         "device_class":"Recyclotron-hw1.1s-sw0.8custom",
                         "branch":"build_of/[[fix_for_tk3284]]",
                         "time":"2067/06/18 10.05am",
-                        "screenshot":"(image missing)",
+                        "screenshot":screenshotPath("issue_refill_after.png"),
                         "hardware_signals":{
                             "powered":false,
-                            "refill":"{{invalid}}",
+                            "{{refill}}":"{{invalid}}",
                         },
                         "ui_scene":{
                             "button":{show:true,text:"off",id:"mOnButton"},
