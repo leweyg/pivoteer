@@ -112,13 +112,14 @@
                 },
                 {
                     whole:{work:{fleet:{devices:{"logs":{
-                        "device_id":"rcb920340",
+                        "device_id":"{{rcb920340}}",
+                        "moment_id":"{{tm20670617e19}}",
                         "device_class":"Recyclotron-hw1.2-sw0.8",
                         "time":"2067/06/17 3.33pm",
                         "screenshot":"(image missing)",
                         "hardware_signals":{
-                            "on":false,
-                            "refill":"{{invalid}}",
+                            "powered":false,
+                            "refill":"{{false}}",
                         },
                         "ui_scene":{
                             "button":{show:true,text:"off",id:"mOnButton"},
@@ -130,6 +131,15 @@
                         },
                     }
 
+                    }}}}
+                },
+                {
+                    whole:{work:{products:{source:{
+                        path:"rctn/ui/page/main/RefillIcon",
+                        code:"\n mRefillIcon = new icon('refill.png');\n"
+                        + " signals.refill.on_update(()=>{\n"
+                        + "   mRefillIcon.show = signals.refill.current;\n"
+                        + " });"
                     }}}}
                 }
 
