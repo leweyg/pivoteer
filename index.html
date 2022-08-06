@@ -4,34 +4,47 @@
     <body>
         <p>A data-pivoteer organizes his life...</p>
 
-        <code id="main_output">
-        </code>
+        <pre id="main_output">
+        </pre>
         <script>
             var mainElements = {
                 theUser : {name:"The User"},
 
             };
             var toStartWith = {
+                "work":{
+                    "messages":{ direct:[], group:[], team:[], },
+                    
+                    "products":{
+                        "timeline":{},
+                        "source":{},
+                    },
+                    "fleet":{
+                        "customers":[],
+                        "engineering":[],
+                        "simulated":[],
+                    },
+                    "tickets":{
+                        "assigned_to_me":{},
+                        "by_timeline":{},
+                    },
+                },
                 "personal":{
                     "biorates":{hr:83},
                     "session_keys":{
-                        "room":{}, "bank":{},
+                        "room":{}, "bank":{},"work":{},
                     },
                 },
-                "work":{
-                    "messages":{},
-                    "products":{},
-                    "fleet":{},
-                    "tickets":{},
-                },
             };
+
+
 
             function htmlFromObject(whole) {
                 return JSON.stringify(whole,null,2);
             }
 
             var str = htmlFromObject(toStartWith);
-            main_output.innerHTML = str;
+            main_output.innerText = str;
         </script>
     </body>
 </html>
