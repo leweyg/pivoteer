@@ -17,6 +17,10 @@
         .link_into_background {
             color : cornflowerblue;
         }
+        .generic_property {
+            color : rgb(187, 186, 186);
+            
+        }
     </style>
     <body>
         <p style="display: none;">A data-pivoteer organizes his life...</p>
@@ -41,8 +45,8 @@
                     },
                     "products":{
                         "roadmap":{},
+                        "tickets":{},
                         "source":{},
-                        "tickets":{}
                     },
                     "fleet":{
                         "devices":[],
@@ -78,16 +82,17 @@
                         products: {
                             roadmap: {
                                     "name":"Recyclotron",
-                                    "target_release":"v0.8 - two weeks",
+                                    "target_release":"v0.8",
+                                    "due_in":"two weeks",
                                     "tickets_assigned_to_you":[
                                         {
-                                            id:"[[3284]]",
+                                            id:"[[tk3284]]",
                                             title:"[[Indicators: Refill: Always shows as refill needed on startup.]]",
                                             release:"v0.8",
                                             priority:1
                                         },
                                         {
-                                            id:3290,
+                                            id:"tk3290",
                                             title:"Indicators: Refill: Doesn't persist after system update.",
                                             release:"v0.8",
                                             priority:2
@@ -99,14 +104,14 @@
                 },
                 {
                     whole:{
-                        work:{products:{tickets:{"3284":{
+                        work:{products:{tickets:{"tk3284":{
                             title:"Indicators: Refill: Always shows as refill needed on startup.",
                             release:"v0.8",
                             priority:1,
                             moment:{
                                 screenshot:"(image missing)",
                                 "device_id":"{{rcb920340}}",
-                                "log_id":"[[tm20670617e19]]",
+                                "[[log_id]]":"[[tm20670617e19]]",
                             }
                         }} }}
                     }
@@ -123,16 +128,17 @@
                             "refill":"{{false}}",
                         },
                         "ui_scene":{
-                            "button":{show:true,text:"off",id:"mOnButton"},
+                            "button":{show:true,text:"off",
+                            id:"mPowerButton",
+                            code:"source/rctn/ui/page/main/PowerButton"
+                        },
                             "icon":{
                                 "{{show}}":"{{true}}",image:"refill.png",
                                 id:"mRefillIcon",
                                 code:"[[source/rctn/ui/page/main/RefillIcon]]"
                             },
                         },
-                    }
-
-                    }}}}
+                    }}}}}
                 },
                 {
                     whole:{work:{products:{source:{
@@ -145,6 +151,7 @@
                 },
                 {
                     whole:{work:{products:{source:{
+                        branch_from:"v0.8",
                         path:"rctn/ui/page/main/RefillIcon",
                         code:"\n mRefillIcon = new icon('refill.png');\n"
                         + " [[mRefillIcon.show = false;]]\n"
@@ -152,7 +159,136 @@
                         + "   mRefillIcon.show = signals.refill.current;\n"
                         + " });"
                     }}}}
-                }
+                },
+                {
+                    whole:{work:{products:{source:{
+                        branch_from:"v0.8",
+                        branch_name:"[[fix_for_tk3284]]",
+                        path:"rctn/ui/page/main/RefillIcon",
+                        code:"\n mRefillIcon = new icon('refill.png');\n"
+                        + " ++{{mRefillIcon.show = false;}}\n"
+                        + " signals.refill.on_update(()=>{\n"
+                        + "   mRefillIcon.show = signals.refill.current;\n"
+                        + " });"
+                    }}}}
+                },
+                {
+                    whole:{work:{fleet:{simulators:{local:{
+                        device_id:"{{local_sim}}",
+                        branch:"fix_for_tk3284",
+                        state:"[[tm20670618e42]]",
+                    }}}}}
+                },
+                {
+                    whole:{work:{fleet:{devices:{"logs":{
+                        "device_id":"{{local_sim}}",
+                        "log_id":"{{tm20670618e42}}",
+                        "device_class":"Recyclotron-hw1.3s-sw0.8custom",
+                        "branch":"[[fix_for_tk3284]]",
+                        "time":"2067/06/18 9.51am",
+                        "screenshot":"(image missing)",
+                        "hardware_signals":{
+                            "powered":false,
+                            "refill":"{{false}}",
+                        },
+                        "ui_scene":{
+                            "button":{show:true,text:"off",id:"mOnButton"},
+                            "icon":{
+                                "{{show}}":"[[false]]",image:"refill.png",
+                                id:"mRefillIcon",
+                                code:"source/rctn/ui/page/main/RefillIcon"
+                            },
+                        },
+                    }}}}}
+                },
+                {
+                    whole:{work:{fleet:{servers:{"build_cloud":{
+                        branch:"{{fix_for_tk3284}}",
+                        build_type:"Recyclotron",
+                        build_now:"[[Build]]",
+                    }}}}}
+                },
+                {
+                    whole:{work:{fleet:{servers:{"build_cloud":{
+                        branch:"{{fix_for_tk3284}}",
+                        build_type:"Recyclotron",
+                        build_ready:"[[build_of/fix_for_tk3284]]",
+                    }}}}}
+                },
+                {
+                    whole:{work:{fleet:{devices:{"testDevice032":{
+                        device_id:"testDevice032",
+                        branch:"{{build_of/fix_for_tk3284}}",
+                        state:"[[tm20670618e92]]",
+                    }}}}}
+                },
+                {
+                    whole:{work:{fleet:{devices:{"logs":{
+                        "device_id":"testDevice032",
+                        "log_id":"{{tm20670618e92}}",
+                        "device_class":"Recyclotron-hw1.1s-sw0.8custom",
+                        "branch":"build_of/[[fix_for_tk3284]]",
+                        "time":"2067/06/18 10.05am",
+                        "screenshot":"(image missing)",
+                        "hardware_signals":{
+                            "powered":false,
+                            "refill":"{{invalid}}",
+                        },
+                        "ui_scene":{
+                            "button":{show:true,text:"off",id:"mOnButton"},
+                            "icon":{
+                                "{{show}}":"{{false}}",image:"refill.png",
+                                id:"mRefillIcon",
+                                code:"source/rctn/ui/page/main/RefillIcon"
+                            },
+                        },
+                    }}}}}
+                },
+                {
+                    whole:{work:{products:{source:{
+                        branch_from:"v0.8",
+                        branch_name:"fix_for_tk3284",
+                        "[[code_review_request]]":true,
+                        path:"rctn/ui/page/main/RefillIcon",
+                        code:"\n mRefillIcon = new icon('refill.png');\n"
+                        + " ++{{mRefillIcon.show = false;}}\n"
+                        + " signals.refill.on_update(()=>{\n"
+                        + "   mRefillIcon.show = signals.refill.current;\n"
+                        + " });"
+                    }}}}
+                },
+                {
+                    whole:{work:{products:{source:{
+                        branch_from:"v0.8",
+                        branch_name:"fix_for_tk3284",
+                        "code_review_request":true,
+                        "[[code_review_approved]]":{approved:true,by:"otherPeer"},
+                        path:"rctn/ui/page/main/RefillIcon",
+                        code:"\n mRefillIcon = new icon('refill.png');\n"
+                        + " ++{{mRefillIcon.show = false;}}\n"
+                        + " signals.refill.on_update(()=>{\n"
+                        + "   mRefillIcon.show = signals.refill.current;\n"
+                        + " });"
+                    }}}}
+                },
+                {
+                    whole:{work:{products:{source:{
+                        branch_from:"v0.8",
+                        branch_name:"{{fix_for_tk3284}}",
+                        merged:true,
+                    }}}}
+                },
+                {
+                    whole:{
+                        work:{products:{tickets:{"tk3284":{
+                            title:"Indicators: Refill: Always shows as refill needed on startup.",
+                            release:"v0.8",
+                            priority:1,
+                            fixed_in:"{{fix_for_tk3284}}",
+                            status:"[[resolved]]",
+                        }} }}
+                    }
+                },
             ];
 
             function isPrimitive(obj) {
@@ -274,7 +410,7 @@
                 var wroteLine = false;
                 for (var i in whole)
                 {
-                    ans += "\n" + tabs + i + ": ";
+                    ans += "\n<span class='generic_property'>" + tabs + i + ":</span> ";
                     ans += htmlFromObject(whole[i],1+depth);
                 }
                 return cleanString(ans);
