@@ -14,12 +14,16 @@
             font-weight: bold;
             text-decoration: underline;
         }
+        .link_into_background {
+            color : cornflowerblue;
+        }
     </style>
     <body>
-        <p>A data-pivoteer organizes his life...</p>
+        <p style="display: none;">A data-pivoteer organizes his life...</p>
 
         <pre id="main_output" 
             class="wordwrapped_pre"
+            style="color:grey"
             onclick="genericClickedMain()">
         </pre>
         <script>
@@ -100,25 +104,29 @@
                             release:"v0.8",
                             priority:1,
                             moment:{
-                                screenshot:"(image)",
+                                screenshot:"(image missing)",
                                 log_moment:"[[fleet #rcb920340 @tm20670617e19]]"
                             }
                         }} }}
                     }
                 },
                 {
-                    whole:{work:{fleet:{engineering:{"logs":{
+                    whole:{work:{fleet:{devices:{"logs":{
                         "device_id":"rcb920340",
                         "device_class":"Recyclotron-hw1.2-sw0.8",
                         "time":"2067/06/17 3.33pm",
-                        "screenshot":"(image)",
+                        "screenshot":"(image missing)",
                         "hardware_signals":{
                             "on":false,
-                            "refill":"invalid",
+                            "refill":"{{invalid}}",
                         },
                         "ui_scene":{
                             "button":{show:true,text:"off",id:"mOnButton"},
-                            "icon":{show:true,src:"refill.png",id:"mRefillIcon"},
+                            "icon":{
+                                "{{show}}":"{{true}}",image:"refill.png",
+                                id:"mRefillIcon",
+                                code:"[[source/rctn/ui/page/main/RefillIcon]]"
+                            },
                         },
                     }
 
@@ -203,6 +211,12 @@
                 if (str.includes("]]")) {
                     str = str.replace("]]","</span>");
                 }
+                if (str.includes("{{")) {
+                    str = str.replace("{{","<span class='link_into_background'>");
+                }
+                if (str.includes("}}")) {
+                    str = str.replace("}}","</span>");
+                }
                 return str;
             }
 
@@ -233,7 +247,7 @@
                 }
                 if (count == 1) {
                     var key = objectFirstKey(whole);
-                    ans += key + "/ " + htmlFromObject(whole[key],1);
+                    ans += "{{" + key + "/}} " + htmlFromObject(whole[key],1);
                     return cleanString(ans);
                 }
 
