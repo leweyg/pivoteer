@@ -25,11 +25,15 @@
     <body>
         <p style="display: none;">A data-pivoteer organizes his life...</p>
 
+        <i><p id="main_message_pre" onclick="genericClickedMain()"></p></i>
         <pre id="main_output" 
             class="wordwrapped_pre"
             style="color:grey"
             onclick="genericClickedMain()">
         </pre>
+        <i><p id="main_message_post" onclick="genericClickedMain()"></p></i>
+        <br/>
+        <p onclick="genericClicedBack()" style="color:lightgrey">(back)</p>
         <script>
             var mainElements = {
                 theUser : {name:"The User"},
@@ -64,10 +68,12 @@
             var experinceTimeline = [
                 {
                     name:"Opening",
+                    message_pre:"Each day, I check my messages, starting with those sent directly to me.",
                     whole:toStartWith,
                 },
                 {
                     name:"First Scene",
+                    message_pre:"Often the messgaes are from product managers, asking about issues needing fixing in something they are trying to get out to customers to meet their business goals on time.",
                     whole:{
                         work:{messages:{direct:
                             {
@@ -78,6 +84,8 @@
                     }}
                 },
                 {
+                    message_pre:"For the this product, there is a deadline in two weeks, and a list of active 'tasks/tickets' is being kept, look like there are two assigned to me right now.",
+                    message_post:"The first item is something to do with the indicator icons...",
                     whole:{work:{
                         products: {
                             roadmap: {
@@ -86,7 +94,7 @@
                                     "due_in":"two weeks",
                                     "tickets_assigned_to_you":[
                                         {
-                                            id:"[[tk3284]]",
+                                            id:"tk3284",
                                             title:"[[Indicators: Refill: Always shows as refill needed on startup.]]",
                                             release:"v0.8",
                                             priority:1
@@ -103,6 +111,7 @@
                     }}
                 },
                 {
+                    message_post:"So the refill icon is showing when it shouldn't, luckily when this ticket was filed it included a snapshot of the machines display and system state, let's take a look...",
                     whole:{
                         work:{products:{tickets:{"tk3284":{
                             title:"Indicators: Refill: Always shows as refill needed on startup.",
@@ -117,6 +126,7 @@
                     }
                 },
                 {
+                    message_post:"At the moment of the issue, the hardware signal said it didn't need a refill, but the ui state shows that the icon was set to showing. Let's look at the source code that controls this icon...",
                     whole:{work:{fleet:{devices:{"logs":{
                         "device_id":"{{rcb920340}}",
                         "log_id":"{{tm20670617e19}}",
@@ -141,6 +151,8 @@
                     }}}}}
                 },
                 {
+                    message_pre:"This is the source code for the software that controls the refill icon. It runs when the system starts up and registers callbacks for when things change:",
+                    message_post:"Seems like the icon is always created, but then only updates when the hardware refill signal changes...",
                     whole:{work:{products:{source:{
                         path:"rctn/ui/page/main/RefillIcon",
                         code:"\n mRefillIcon = new icon('refill.png');\n"
@@ -150,29 +162,35 @@
                     }}}}
                 },
                 {
+                    message_pre:"One approach to a solution is to make sure that the icon defaults to matching the signal state, rather than only when it changes!",
+                    message_post:"Now to make this into a product change request...",
                     whole:{work:{products:{source:{
                         branch_from:"v0.8",
                         path:"rctn/ui/page/main/RefillIcon",
                         code:"\n mRefillIcon = new icon('refill.png');\n"
-                        + " [[mRefillIcon.show = false;]]\n"
+                        + " [[mRefillIcon.show = signals.refill.current;]]\n"
                         + " signals.refill.on_update(()=>{\n"
                         + "   mRefillIcon.show = signals.refill.current;\n"
                         + " });"
                     }}}}
                 },
                 {
-                    whole:{work:{products:{source:{
+                    message_pre:"Each product change is tracked seperatly, so that it can be properly tested and tracked before merging it into the main branch of the product and truely resolving the issue.",
+                    message_post:"Also once this change is tracked, we can push it to our physical and simulated devices to try it out!",
+                    whole:{work:{products:{source:{change:{
                         branch_from:"v0.8",
                         branch_name:"[[fix_for_tk3284]]",
                         path:"rctn/ui/page/main/RefillIcon",
                         code:"\n mRefillIcon = new icon('refill.png');\n"
-                        + " ++{{mRefillIcon.show = false;}}\n"
+                        + " ++{{mRefillIcon.show = signals.refill.current;}}\n"
                         + " signals.refill.on_update(()=>{\n"
                         + "   mRefillIcon.show = signals.refill.current;\n"
                         + " });"
-                    }}}}
+                    }}}}}
                 },
                 {
+                    message_pre:"First we test it on a simulator to make sure nothing is drastically wrong, putting this change onto a simulator is generally fairly quick...",
+                    message_post:"And then we run the simulator...",
                     whole:{work:{fleet:{simulators:{local:{
                         device_id:"{{local_sim}}",
                         branch:"fix_for_tk3284",
@@ -180,7 +198,9 @@
                     }}}}}
                 },
                 {
-                    whole:{work:{fleet:{devices:{"logs":{
+                    message_pre:"This gives a virtual snapshot from the simulator, so we can see what's going on.",
+                    message_post:"Looks like the change worked, with the icon now starting in the correct state, even if the signal doens't change.",
+                    whole:{work:{fleet:{simulators:{"logs":{
                         "device_id":"{{local_sim}}",
                         "log_id":"{{tm20670618e42}}",
                         "device_class":"Recyclotron-hw1.3s-sw0.8custom",
@@ -202,20 +222,18 @@
                     }}}}}
                 },
                 {
+                    message_pre:"Now we can make a version that is suitable to push to a physical device:",
+                    message_post:"This is called a 'build' as the source code is tightly packed to match the devices hardware, and can take some time to do so.",
                     whole:{work:{fleet:{servers:{"build_cloud":{
                         branch:"{{fix_for_tk3284}}",
                         build_type:"Recyclotron",
+                        build_id:"build_of/fix_for_tk3284",
                         build_now:"[[Build]]",
                     }}}}}
                 },
                 {
-                    whole:{work:{fleet:{servers:{"build_cloud":{
-                        branch:"{{fix_for_tk3284}}",
-                        build_type:"Recyclotron",
-                        build_ready:"[[build_of/fix_for_tk3284]]",
-                    }}}}}
-                },
-                {
+                    message_pre:"We schedule a device to work with, and then push that build to the device.",
+                    message_post:"After it is installed we can try it out and take another system snapshot...",
                     whole:{work:{fleet:{devices:{"testDevice032":{
                         device_id:"testDevice032",
                         branch:"{{build_of/fix_for_tk3284}}",
@@ -223,6 +241,8 @@
                     }}}}}
                 },
                 {
+                    message_pre:"Looking at this real device, it is a slightly different hardware version but seems close enough.",
+                    message_post:"On hardware it looks like the signal is actually 'invalid' rather than 'false' for the refill, but luckily our code supports translating that as false. So for now this is appropriate.",
                     whole:{work:{fleet:{devices:{"logs":{
                         "device_id":"testDevice032",
                         "log_id":"{{tm20670618e92}}",
@@ -245,40 +265,45 @@
                     }}}}}
                 },
                 {
-                    whole:{work:{products:{source:{
+                    message_pre:"We then ask our general team for a 'code review' where others we consider qualified to read the code check to see if it is correct and generally readable for future maintenance.",
+                    whole:{work:{products:{source:{change:{
                         branch_from:"v0.8",
                         branch_name:"fix_for_tk3284",
                         "[[code_review_request]]":true,
                         path:"rctn/ui/page/main/RefillIcon",
                         code:"\n mRefillIcon = new icon('refill.png');\n"
-                        + " ++{{mRefillIcon.show = false;}}\n"
+                        + " ++{{mRefillIcon.show = signals.refill.current;}}\n"
                         + " signals.refill.on_update(()=>{\n"
                         + "   mRefillIcon.show = signals.refill.current;\n"
                         + " });"
-                    }}}}
+                    }}}}}
                 },
                 {
-                    whole:{work:{products:{source:{
+                    message_post:"Looks like at least one peer considered it fine.",
+                    whole:{work:{products:{source:{change:{
                         branch_from:"v0.8",
                         branch_name:"fix_for_tk3284",
                         "code_review_request":true,
                         "[[code_review_approved]]":{approved:true,by:"otherPeer"},
                         path:"rctn/ui/page/main/RefillIcon",
                         code:"\n mRefillIcon = new icon('refill.png');\n"
-                        + " ++{{mRefillIcon.show = false;}}\n"
+                        + " ++{{mRefillIcon.show = signals.refill.current;}}\n"
                         + " signals.refill.on_update(()=>{\n"
                         + "   mRefillIcon.show = signals.refill.current;\n"
                         + " });"
-                    }}}}
+                    }}}}}
                 },
                 {
-                    whole:{work:{products:{source:{
+                    message_pre:"At this point we are authorized to 'merge' this change into the full release of the product, where it will gradually propogate across the fleet as a part of version 0.8.",
+                    whole:{work:{products:{source:{change:{
                         branch_from:"v0.8",
                         branch_name:"{{fix_for_tk3284}}",
-                        merged:true,
-                    }}}}
+                        merged:"[[true]]",
+                    }}}}}
                 },
                 {
+                    message_pre:"We also mark the issue ticket as resolved, including which exact change the resolution was in.",
+                    message_post:"And then go back to our messages...",
                     whole:{
                         work:{products:{tickets:{"tk3284":{
                             title:"Indicators: Refill: Always shows as refill needed on startup.",
@@ -290,6 +315,7 @@
                     }
                 },
             ];
+            var MainCurrentScene = experinceTimeline[0];
 
             function isPrimitive(obj) {
                 if (obj===undefined) return "undef";
@@ -337,12 +363,10 @@
             };
     
             var mainTimelineFrame = 0;
-            function applyNextExperienceMoment() {
-                mainTimelineFrame = (mainTimelineFrame + 1) % experinceTimeline.length;
-                var change = experinceTimeline[mainTimelineFrame];
-                if (change.whole) {
-                    toStartWith = change.whole;
-                }
+            function applyNextExperienceMoment(dir=1) {
+                mainTimelineFrame = (mainTimelineFrame + dir) % experinceTimeline.length;
+                var scene = experinceTimeline[mainTimelineFrame];
+                MainCurrentScene = scene;
             }
             //applyNextExperienceMoment();
 
@@ -417,14 +441,20 @@
             }
 
             function redraw() {
-                var str = htmlFromObject(toStartWith);
+                var str = htmlFromObject(MainCurrentScene.whole);
                 main_output.innerHTML = str;
+                main_message_pre .innerText = MainCurrentScene.message_pre ? ("" + MainCurrentScene.message_pre)  : "";
+                main_message_post.innerText = MainCurrentScene.message_post ?("" + MainCurrentScene.message_post) : "";
             }
 
             redraw();
 
             function genericClickedMain() {
                 applyNextExperienceMoment();
+                redraw();
+            }
+            function genericClicedBack() {
+                applyNextExperienceMoment(-1);
                 redraw();
             }
         </script>
