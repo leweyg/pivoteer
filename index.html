@@ -105,7 +105,8 @@
                             priority:1,
                             moment:{
                                 screenshot:"(image missing)",
-                                log_moment:"[[fleet #rcb920340 @tm20670617e19]]"
+                                "device_id":"{{rcb920340}}",
+                                "log_id":"[[tm20670617e19]]",
                             }
                         }} }}
                     }
@@ -113,7 +114,7 @@
                 {
                     whole:{work:{fleet:{devices:{"logs":{
                         "device_id":"{{rcb920340}}",
-                        "moment_id":"{{tm20670617e19}}",
+                        "log_id":"{{tm20670617e19}}",
                         "device_class":"Recyclotron-hw1.2-sw0.8",
                         "time":"2067/06/17 3.33pm",
                         "screenshot":"(image missing)",
@@ -137,12 +138,21 @@
                     whole:{work:{products:{source:{
                         path:"rctn/ui/page/main/RefillIcon",
                         code:"\n mRefillIcon = new icon('refill.png');\n"
+                        + " signals.refill.[[on_update]](()=>{\n"
+                        + "   mRefillIcon.show = signals.refill.current;\n"
+                        + " });"
+                    }}}}
+                },
+                {
+                    whole:{work:{products:{source:{
+                        path:"rctn/ui/page/main/RefillIcon",
+                        code:"\n mRefillIcon = new icon('refill.png');\n"
+                        + " [[mRefillIcon.show = false;]]\n"
                         + " signals.refill.on_update(()=>{\n"
                         + "   mRefillIcon.show = signals.refill.current;\n"
                         + " });"
                     }}}}
                 }
-
             ];
 
             function isPrimitive(obj) {
