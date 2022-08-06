@@ -9,12 +9,15 @@
         <script>
             var mainElements = {
                 theUser : {name:"The User"},
-
+                theCustomer : {name:"The Customer"},
             };
             var toStartWith = {
                 "work":{
-                    "messages":{ direct:[], group:[], team:[], },
-                    
+                    "messages":{ 
+                        direct:[], 
+                        group:[], 
+                        team:[],
+                    },
                     "products":{
                         "timeline":{},
                         "source":{},
@@ -36,15 +39,73 @@
                     },
                 },
             };
+            var experinceTimeline = [
+                {
+                    name:"First Scene",
+                    merge:{
+                        "work":{"messages":{"direct":{
+                            "from":"theCustomer",
+                            "message":"Heard you could fix this issue for NewKhemit..."
+                        }}}
+                    }
+                }
 
+            ];
 
-
-            function htmlFromObject(whole) {
-                return JSON.stringify(whole,null,2);
+            function jsonMerge(root,val)
+            {
+                if (Array.isArray(root)) {
+                    root.push(val);
+                    return root;
+                }
+                for (var i in val)
+                {
+                    if (i in root) {
+                        jsonMerge(root[i],val[i]);
+                    } else {
+                        root[i] = val;
+                    }
+                }
+                return root;
             }
 
-            var str = htmlFromObject(toStartWith);
-            main_output.innerText = str;
+            function applyNextExperienceMoment() {
+                toStartWith = jsonMerge(toStartWith, experinceTimeline[0].merge);
+            }
+            //applyNextExperienceMoment();
+
+            function htmlFromObject(whole, depth=0) {
+                //return JSON.stringify(whole,null,2);
+
+                var tabs = "";
+                for (var i=0; i<depth; i++) {
+                    tabs += "   ";
+                }
+                var ans = "";//tabs;
+
+                var type = typeof(whole);
+                if (type == "string")
+                {
+                    ans += whole;
+                    return ans; 
+                }
+
+                var wroteLine = false;
+                for (var i in whole)
+                {
+                    ans += "\n" + tabs + i + " : ";
+                    ans += htmlFromObject(whole[i],1+depth);
+                }
+                return ans;
+            }
+
+            function redraw() {
+                var str = htmlFromObject(toStartWith);
+                main_output.innerText = str;
+            }
+
+
+            redraw();
         </script>
     </body>
 </html>
