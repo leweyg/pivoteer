@@ -1,35 +1,49 @@
 <html>
     <head><title>The Pivoteer</title></head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .wordwrapped_pre {
+            white-space: pre-wrap;       /* Since CSS 2.1 */
+            white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+            white-space: -pre-wrap;      /* Opera 4-6 */
+            white-space: -o-pre-wrap;    /* Opera 7 */
+            word-wrap: break-word;       /* Internet Explorer 5.5+ */
+        }
+        .highlight_link {
+            color : green;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+    </style>
     <body>
         <p>A data-pivoteer organizes his life...</p>
 
-        <pre id="main_output">
+        <pre id="main_output" 
+            class="wordwrapped_pre"
+            onclick="genericClickedMain()">
         </pre>
         <script>
             var mainElements = {
                 theUser : {name:"The User"},
+                theProducteer : {name:"The Producteer"},
                 theCustomer : {name:"The Customer"},
             };
             var toStartWith = {
                 "work":{
                     "messages":{ 
-                        direct:[], 
+                        "direct":"[[(1 new)]]", 
                         group:[], 
                         team:[],
                     },
                     "products":{
-                        "timeline":{},
+                        "roadmap":{},
                         "source":{},
+                        "tickets":{}
                     },
                     "fleet":{
-                        "customers":[],
-                        "engineering":[],
-                        "simulated":[],
-                    },
-                    "tickets":{
-                        "assigned_to_me":{},
-                        "by_timeline":{},
+                        "devices":[],
+                        "simulators":[],
+                        "servers":[],
                     },
                 },
                 "personal":{
@@ -41,17 +55,88 @@
             };
             var experinceTimeline = [
                 {
+                    name:"Opening",
+                    whole:toStartWith,
+                },
+                {
                     name:"First Scene",
-                    merge:{
-                        "work":{"messages":{"direct":{
-                            "from":"theCustomer",
-                            "message":"Heard you could fix this issue for NewKhemit..."
-                        }}}
+                    whole:{
+                        work:{messages:{direct:
+                            {
+                        "from":"theProducteer",
+                        "message":"For our new Recyclotron, the roadmap says you have [[some outstanding issue tickets]]. Please resolve."
                     }
+                        }
+                    }}
+                },
+                {
+                    whole:{work:{
+                        products: {
+                            roadmap: {
+                                    "name":"Recyclotron",
+                                    "target_release":"v0.8 - two weeks",
+                                    "tickets_assigned_to_you":[
+                                        {
+                                            id:"[[3284]]",
+                                            title:"[[Indicators: Refill: Always shows as refill needed on startup.]]",
+                                            release:"v0.8",
+                                            priority:1
+                                        },
+                                        {
+                                            id:3290,
+                                            title:"Indicators: Refill: Doesn't persist after system update.",
+                                            release:"v0.8",
+                                            priority:2
+                                        }
+                                    ]
+                            }
+                        }
+                    }}
+                },
+                {
+                    whole:{
+                        work:{products:{tickets:{"3284":{
+                            title:"Indicators: Refill: Always shows as refill needed on startup.",
+                            release:"v0.8",
+                            priority:1,
+                            moment:{
+                                screenshot:"(image)",
+                                log_moment:"[[fleet #rcb920340 @tm20670617e19]]"
+                            }
+                        }} }}
+                    }
+                },
+                {
+                    whole:{work:{fleet:{engineering:{"logs":{
+                        "device_id":"rcb920340",
+                        "device_class":"Recyclotron-hw1.2-sw0.8",
+                        "time":"2067/06/17 3.33pm",
+                        "screenshot":"(image)",
+                        "hardware_signals":{
+                            "on":false,
+                            "refill":"invalid",
+                        },
+                        "ui_scene":{
+                            "button":{show:true,text:"off",id:"mOnButton"},
+                            "icon":{show:true,src:"refill.png",id:"mRefillIcon"},
+                        },
+                    }
+
+                    }}}}
                 }
 
             ];
 
+            function isPrimitive(obj) {
+                if (obj===undefined) return "undef";
+                if (obj===null) return "null";
+                if (Array.isArray(obj)) return false;
+                var type = typeof(obj);
+                if ((type=="string") || (type=="number")||(type=="boolean")) {
+                    return true;
+                }
+                return false;
+            }
             function jsonMerge(root,val)
             {
                 if (Array.isArray(root)) {
@@ -68,11 +153,58 @@
                 }
                 return root;
             }
-
+            function parsePath(root,path) {
+                var parts = path.split(".");
+                for (var i in parts) {
+                    var prop = parts[i];
+                    var index = null;
+                    if (prop.endsWith("]")) {
+                        var mid = prop.indexOf("[");
+                        index = prop.substring(mid+1).replace("]","");
+                        prop = prop.substring(0,mid);
+                    }
+                    console.assert(prop in root);
+                    root = root[prop];
+                    if (index != null) {
+                        root = root[index];
+                    }
+                }
+                return root;
+            };
+    
+            var mainTimelineFrame = 0;
             function applyNextExperienceMoment() {
-                toStartWith = jsonMerge(toStartWith, experinceTimeline[0].merge);
+                mainTimelineFrame = (mainTimelineFrame + 1) % experinceTimeline.length;
+                var change = experinceTimeline[mainTimelineFrame];
+                if (change.whole) {
+                    toStartWith = change.whole;
+                }
             }
             //applyNextExperienceMoment();
+
+            function objectPropsCount(obj) {
+                var count = 0;
+                for (var i in obj) {
+                    count++;
+                }
+                return count;
+            }
+
+            function objectFirstKey(obj) {
+                for (var i in obj) {
+                    return i;
+                }
+            }
+
+            function cleanString(str) {
+                if (str.includes("[[")) {
+                    str = str.replace("[[","<span class='highlight_link'>");
+                }
+                if (str.includes("]]")) {
+                    str = str.replace("]]","</span>");
+                }
+                return str;
+            }
 
             function htmlFromObject(whole, depth=0) {
                 //return JSON.stringify(whole,null,2);
@@ -83,29 +215,48 @@
                 }
                 var ans = "";//tabs;
 
-                var type = typeof(whole);
-                if (type == "string")
+                if (isPrimitive(whole))
                 {
-                    ans += whole;
-                    return ans; 
+                    ans += "" + whole;
+                    return cleanString(ans);
+                }
+                if (Array.isArray(whole)) {
+                    var len = whole.length;
+                    if (len == 0) {
+                        return "";
+                    }
+                }
+
+                var count = objectPropsCount(whole);
+                if (count == 0) {
+                    return "{ }";
+                }
+                if (count == 1) {
+                    var key = objectFirstKey(whole);
+                    ans += key + "/ " + htmlFromObject(whole[key],1);
+                    return cleanString(ans);
                 }
 
                 var wroteLine = false;
                 for (var i in whole)
                 {
-                    ans += "\n" + tabs + i + " : ";
+                    ans += "\n" + tabs + i + ": ";
                     ans += htmlFromObject(whole[i],1+depth);
                 }
-                return ans;
+                return cleanString(ans);
             }
 
             function redraw() {
                 var str = htmlFromObject(toStartWith);
-                main_output.innerText = str;
+                main_output.innerHTML = str;
             }
 
-
             redraw();
+
+            function genericClickedMain() {
+                applyNextExperienceMoment();
+                redraw();
+            }
         </script>
     </body>
 </html>
