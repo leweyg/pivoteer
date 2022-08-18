@@ -28,12 +28,18 @@
             margin: 0px;
             padding: 0px;
         }
+        .console_text {
+            color: rgb(121, 112, 112);
+            border: 1px solid rgba(142, 236, 0, 0);
+            background-color: rgba(172, 255, 47, 0.205);
+        }
     </style>
     <body>
         <h1 class="my_title">The Pivoteer</h1>
         <p style="display: inline;"> 
             pg.<span id="el_page_number">1</span>
-            <span onclick="genericClicedBack()" style="color:lightgrey">(back)</span> </p>
+            <span onclick="genericClicedBack()" style="color:lightgrey">(back)</span>
+        </p>
         <p style="display: none;">A data-pivoteer organizes his life...</p>
 
         <i><p id="main_message_pre" onclick="genericClickedMain()"></p></i>
@@ -45,10 +51,18 @@
         <i><p id="main_message_post" onclick="genericClickedMain()"></p></i>
         <br/>
 
-        <div id="main_message_2d" style="display:none; background-color: lightgrey; position: relative; width:320px; height: 240px;">
-            <span style="position: absolute; width: 200px; height: 160px; left:20px; border: 3px solid green;"> </span>
-            <pre style="position: absolute; top:30px;">some text</pre>
-            <pre style="position: absolute; top:40px; left: 50px;">more text</pre>
+        <br/>
+        <br/>
+        <br/>
+        <div style="display: none;">
+            <pre style="text-size-adjust: 50%; color:lightgrey">
+            Early dev visualization:</pre>
+            <div id="main_message_2d" onclick="genericClickedMain()" 
+                style="background-color: rgb(255, 255, 255); position: relative; width:100%; height: 480px;">
+                <span style="position: absolute; width: 200px; height: 160px; left:20px; border: 3px solid green;"> </span>
+                <pre style="position: absolute; top:30px;">some text</pre>
+                <pre style="position: absolute; top:40px; left: 50px;">more text</pre>
+            </div>
         </div>
 
         <script>
@@ -495,15 +509,17 @@
             function isFollowsOn(obj)
             {
                 if (isPrimitive(obj)) return true;
+                if (Array.isArray(obj)) return false;
+                if (objectPropsCount(obj) < 2) return true;
                 return false;
             }
 
-            function buildSceneFromObject(obj, cursor={depth:0, height:0} ) {
+            function buildSceneFromObject(obj, cursor={depth:0, height:0, deep:0} ) {
 
                 var ans = "";
                 var fontWidth = 8;
-                var fontHeight = 12;
-                ans += "<pre style=\"position: absolute;";
+                var fontHeight = 20;
+                ans += "<pre class='console_text' style=\"position: absolute;";
                 ans += "left:" + (cursor.depth*fontWidth) + "px;";
                 ans += "top:" + (cursor.height*fontHeight) + "px;";
 
@@ -526,6 +542,29 @@
                     cursor.depth = saveDepth;
                     return inner;
                 }
+                else if (objectPropsCount(whole) == 0)
+                {
+                    inner = "{ }"; 
+                }
+                else if (objectPropsCount(whole) == 1)
+                {
+                    var firstKey = objectFirstKey(obj);
+                    var val = obj[firstKey];
+                    firstKey = "" + firstKey + "/";
+                    var left = buildSceneFromObject(firstKey, cursor);
+                    var saveDepth = cursor.depth;
+                    var saveDeep = cursor.deep;
+                    if (isFollowsOn(val)) {
+                        cursor.depth += firstKey.length + 1;
+                    } else {
+                        cursor.deep++;
+                        cursor.depth = cursor.deep;
+                    }
+                    inner = left + "" + buildSceneFromObject(val, cursor);
+                    cursor.depth = saveDepth;
+                    cursor.deep = saveDeep;
+                    return inner;
+                }
                 else
                 {
                     var saveDepth = cursor.depth;
@@ -534,6 +573,7 @@
                         var val = obj[key];
                         cursor.height++;
                         cursor.depth = saveDepth;
+                        key = "" + key + ":";
                         var left = buildSceneFromObject(key, cursor);
                         var isRightFollowOn = isFollowsOn(val);
                         cursor.depth = saveDepth + (isRightFollowOn ? key.length : 1 ) + 1;
