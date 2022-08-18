@@ -270,7 +270,31 @@
                     }}}}}
                 },
                 {
-                    message_pre:"We then ask our general team for a 'code review' where others we consider qualified to read the code check to see if it is correct and generally readable for future maintenance.",
+                    message_pre:"Now is a good time to manually test that the refill icon does actually appear correctly after our change.",
+                    message_post:"Actually testing on a physical device... yes refill icons appears to function correctly.",
+                    whole:{work:{fleet:{devices:{"logs":{
+                        "device_id":"testDevice032",
+                        "log_id":"tm20670618e94",
+                        "device_class":"Recyclotron-hw1.1s-sw0.8custom",
+                        "branch":"build_of/[[fix_for_tk3284]]",
+                        "time":"2067/06/18 10.10am",
+                        "screenshot":screenshotPath("issue_refill_before.png"),
+                        "hardware_signals":{
+                            "powered":false,
+                            "{{refill}}":"{{true}}",
+                        },
+                        "ui_scene":{
+                            "button":{show:true,text:"off",id:"mOnButton"},
+                            "icon":{
+                                "{{show}}":"{{true}}",image:"refill.png",
+                                id:"mRefillIcon",
+                                code:"source/rctn/ui/page/main/RefillIcon"
+                            },
+                        },
+                    }}}}}
+                },
+                {
+                    message_pre:"At this point we consider the change probably valid, and ready for deeper review:",
                     whole:{work:{products:{source:{change:{
                         branch_from:"v0.8",
                         branch_name:"fix_for_tk3284",
@@ -284,15 +308,22 @@
                     }}}}}
                 },
                 {
+                    message_pre:"We then ask our general team for a 'code review' where others we consider qualified to read the code check to see if it is correct and generally readable for future maintenance.",
+                    whole:{work:{messages:{team:{
+                            "to":"theTeam",
+                            "message":"Fixing how the refill icon inializes, can someone review: [[fix_for_tk3284]] "
+                    }}}}
+                },
+                {
                     message_post:"Looks like at least one peer considered it fine.",
                     whole:{work:{products:{source:{change:{
                         branch_from:"v0.8",
                         branch_name:"fix_for_tk3284",
                         "code_review_request":true,
-                        "[[code_review_approved]]":{approved:true,by:"otherPeer"},
+                        "[[code_review_approved]]":{"{{approved}}":true,by:"{{otherPeer}}"},
                         path:"rctn/ui/page/main/RefillIcon",
                         code:"\n mRefillIcon = new icon('refill.png');\n"
-                        + " ++{{mRefillIcon.show = signals.refill.current;}}\n"
+                        + " ++mRefillIcon.show = signals.refill.current;\n"
                         + " signals.refill.on_update(()=>{\n"
                         + "   mRefillIcon.show = signals.refill.current;\n"
                         + " });"
