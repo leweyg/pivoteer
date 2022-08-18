@@ -31,7 +31,9 @@
     </style>
     <body>
         <h1 class="my_title">The Pivoteer</h1>
-        <p style="display: inline;"> pg.<span id="el_page_number">1</span> <span onclick="genericClicedBack()" style="color:lightgrey">(back)</span> </p>
+        <p style="display: inline;"> 
+            pg.<span id="el_page_number">1</span>
+            <span onclick="genericClicedBack()" style="color:lightgrey">(back)</span> </p>
         <p style="display: none;">A data-pivoteer organizes his life...</p>
 
         <i><p id="main_message_pre" onclick="genericClickedMain()"></p></i>
@@ -42,7 +44,13 @@
         </pre>
         <i><p id="main_message_post" onclick="genericClickedMain()"></p></i>
         <br/>
-        <p onclick="genericClicedBack()" style="color:lightgrey">(back)</p>
+
+        <div id="main_message_2d" style="display:none; background-color: lightgrey; position: relative; width:320px; height: 240px;">
+            <span style="position: absolute; width: 200px; height: 160px; left:20px; border: 3px solid green;"> </span>
+            <pre style="position: absolute; top:30px;">some text</pre>
+            <pre style="position: absolute; top:40px; left: 50px;">more text</pre>
+        </div>
+
         <script>
             var mainElements = {
                 theUser : {name:"The User"},
@@ -444,7 +452,7 @@
                 return str;
             }
 
-            function htmlFromObject(whole, depth=0) {
+            function htmlFromObject(whole, depth=0, options={}) {
                 //return JSON.stringify(whole,null,2);
 
                 var tabs = "";
@@ -471,7 +479,7 @@
                 }
                 if (count == 1) {
                     var key = objectFirstKey(whole);
-                    ans += "{{" + key + "/}} " + htmlFromObject(whole[key],1);
+                    ans += "{{" + key + "/}} " + htmlFromObject(whole[key],1,options);
                     return cleanString(ans);
                 }
 
@@ -479,16 +487,76 @@
                 for (var i in whole)
                 {
                     ans += "\n<span class='generic_property'>" + tabs + i + ":</span> ";
-                    ans += htmlFromObject(whole[i],1+depth);
+                    ans += htmlFromObject(whole[i],1+depth,options);
                 }
                 return cleanString(ans);
             }
 
+            function isFollowsOn(obj)
+            {
+                if (isPrimitive(obj)) return true;
+                return false;
+            }
+
+            function buildSceneFromObject(obj, cursor={depth:0, height:0} ) {
+
+                var ans = "";
+                var fontWidth = 8;
+                var fontHeight = 12;
+                ans += "<pre style=\"position: absolute;";
+                ans += "left:" + (cursor.depth*fontWidth) + "px;";
+                ans += "top:" + (cursor.height*fontHeight) + "px;";
+
+                var inner = "";
+                var whole = obj;
+                if (isPrimitive(whole))
+                {
+                    inner = htmlFromObject(obj);
+                }
+                else if (Array.isArray(whole)) 
+                {
+                    // todo
+                    var saveDepth = cursor.depth;
+                    cursor.depth++;
+                    for (var key in obj)
+                    {
+                        cursor.height++;
+                        inner += buildSceneFromObject(obj[key], cursor);
+                    }
+                    cursor.depth = saveDepth;
+                    return inner;
+                }
+                else
+                {
+                    var saveDepth = cursor.depth;
+                    for (var key in obj)
+                    {
+                        var val = obj[key];
+                        cursor.height++;
+                        cursor.depth = saveDepth;
+                        var left = buildSceneFromObject(key, cursor);
+                        var isRightFollowOn = isFollowsOn(val);
+                        cursor.depth = saveDepth + (isRightFollowOn ? key.length : 1 ) + 1;
+                        var right = buildSceneFromObject(val, cursor);
+                        inner += "" + left + " " + right;
+                    }
+                    cursor.depth = saveDepth;
+                    return inner;
+                }
+
+                ans += "\">" + inner + "</pre>";
+                return ans;
+            }
+
+
             function redraw() {
-                var str = htmlFromObject(MainCurrentScene.whole);
+                var obj = MainCurrentScene.whole;
+                var str = htmlFromObject(obj);
                 main_output.innerHTML = str;
                 main_message_pre .innerText = MainCurrentScene.message_pre ? ("" + MainCurrentScene.message_pre)  : "";
                 main_message_post.innerText = MainCurrentScene.message_post ?("" + MainCurrentScene.message_post) : "";
+                main_message_2d.innerHTML = buildSceneFromObject(obj);
+
             }
 
             redraw();
