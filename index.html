@@ -23,8 +23,15 @@
         .my_screenshot {
             width:200px;
         }
+        .my_title {
+            display: inline;
+            margin: 0px;
+            padding: 0px;
+        }
     </style>
     <body>
+        <h1 class="my_title">The Pivoteer</h1>
+        <p style="display: inline;"> pg.<span id="el_page_number">1</span> <span onclick="genericClicedBack()" style="color:lightgrey">(back)</span> </p>
         <p style="display: none;">A data-pivoteer organizes his life...</p>
 
         <i><p id="main_message_pre" onclick="genericClickedMain()"></p></i>
@@ -403,6 +410,7 @@
                 mainTimelineFrame = (mainTimelineFrame + dir) % experinceTimeline.length;
                 var scene = experinceTimeline[mainTimelineFrame];
                 MainCurrentScene = scene;
+                el_page_number.innerText = (mainTimelineFrame+1);
             }
             //applyNextExperienceMoment();
 
